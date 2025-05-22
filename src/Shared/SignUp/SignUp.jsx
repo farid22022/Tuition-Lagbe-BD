@@ -1,49 +1,47 @@
 
+
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FiUser, FiLock, FiMail, FiSmartphone, FiEye, FiEyeOff, FiCheck } from 'react-icons/fi';
+import {
+    FiUser, FiLock, FiMail, FiSmartphone, FiEye, FiEyeOff, FiCheck, FiBook, FiMapPin, FiHome
+} from 'react-icons/fi';
 import teacher from "./../../../public/Images/undraw_teaching_58yg.svg";
 import student from "./../../../public/Images/undraw_educator_6dgp.svg";
 
 const SignUp = () => {
-    const [haveAccount, setHaveAccount] = useState(false);
-    const [isTeacher, setIsTeacher] = useState(false);
+    const [isTeacher, setIsTeacher] = useState(true);
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         name: '',
-        phone: '',
         email: '',
-        gender: '',
         password: '',
-        confirmPassword: ''
+        phone: '',
+        age: '',
+        institution: '',
+        image_url: '',
+        user_type: 'teacher',
+        experience: '',
+        subjects: '',
+        location: '',
+        preferred_subjects: '',
+        student_class: '',
+        address: '',
     });
 
-    // Animation variants
     const imageVariants = {
         float: {
             y: [0, -20, 0],
-            transition: {
-                duration: 4,
-                repeat: Infinity,
-                ease: "easeInOut"
-            }
+            transition: { duration: 4, repeat: Infinity, ease: "easeInOut" }
         },
-        hover: {
-            scale: 1.05,
-            transition: { duration: 0.3 }
-        }
+        hover: { scale: 1.05, transition: { duration: 0.3 } }
     };
 
     const containerVariants = {
         hidden: { opacity: 0 },
         visible: {
             opacity: 1,
-            transition: {
-                staggerChildren: 0.1,
-                when: "beforeChildren"
-            }
-        },
-        scale:.5
+            transition: { staggerChildren: 0.1, when: "beforeChildren" }
+        }
     };
 
     const itemVariants = {
@@ -51,29 +49,80 @@ const SignUp = () => {
         visible: { opacity: 1, y: 0 }
     };
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Handle form submission
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setFormData(prev => ({ ...prev, [name]: value }));
+    };
+
+
+    const handleSignup = async (e) => {
+    e.preventDefault();
+    
+    // 1. Explicitly determine user_type from state
+    const user_type = isTeacher ? 'teacher' : 'guardian';
+
+    // 2. Prepare data with proper type conversions
+    const postData = {
+        user: {
+            ...formData,
+            age: formData.age ? parseInt(formData.age) : null,
+            user_type: user_type, // Direct state-derived value
+            password: formData.password // Ensure password exists
+        },
+        detail: isTeacher ? {
+            experience: formData.experience,
+            subjects: formData.subjects,
+            location: formData.location
+        } : {
+            preferred_subjects: formData.preferred_subjects,
+            student_class: formData.student_class,
+            address: formData.address
+        }
+    };
+
+    // 3. Debugging log
+    console.log('Final Submission Data:', JSON.stringify(postData, null, 2));
+
+    try {
+        const response = await fetch('http://127.0.0.1:8000/api/signup/', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(postData),
+        });
+
+        const responseData = await response.json();
+        
+        if (!response.ok) {
+            console.error('Backend validation errors:', responseData);
+            alert(`Signup failed: ${responseData.message || 'Unknown error'}`);
+            return;
+        }
+        
+        alert("Signup successful!");
+        } catch (error) {
+            console.error("Network error:", error);
+            alert("Network error. Please try again.");
+        }
     };
 
     return (
-        <div className="flex items-center justify-center bg-gradient-to-br from-emerald-50 to-green-50 p-4">
-            <motion.div 
-                className="flex flex-col md:flex-row items-center bg-white rounded-3xl shadow-2xl p-10 w-full"
+        <div className="flex items-center justify-center min-h-screen bg-gradient-to-br from-emerald-50 to-green-50 p-4">
+            <motion.div
+                className="flex flex-col md:flex-row items-center  rounded-3xl p-10 w-full max-w-6xl"
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.5 }}
             >
-                {/* Animated Image Section */}
-                <motion.div 
+                {/* Image Section */}
+                <motion.div
                     className="w-full md:w-1/2 flex justify-center mb-8 md:mb-0"
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
                 >
-                    <motion.img 
-                        src={isTeacher ? teacher : student} 
-                        alt="role" 
+                    <motion.img
+                        src={isTeacher ? teacher : student}
+                        alt="role"
                         className="w-4/5 h-auto object-contain"
                         variants={imageVariants}
                         animate="float"
@@ -82,244 +131,272 @@ const SignUp = () => {
                 </motion.div>
 
                 {/* Form Section */}
-                <motion.div 
-                    className="w-full md:w-1/2 lg:scale-75"
+                <motion.div
+                    className="w-full md:w-1/2 space-y-6"
                     variants={containerVariants}
                     initial="hidden"
                     animate="visible"
                 >
-                    <motion.div 
-                        className="space-y-8"
-                        variants={containerVariants}
-                    >
-                        {/* Header */}
-                        <motion.div 
-                            className="text-center"
-                            variants={itemVariants}
-                        >
-                            <h2 className="text-3xl font-bold text-emerald-600 mb-3">
-                                {haveAccount ? "Welcome Back!" : "Create Account"}
-                            </h2>
-                            <motion.p 
-                                className="text-lg text-gray-600"
+                    <motion.div className="text-center" variants={itemVariants}>
+                        <h2 className="text-3xl font-bold text-emerald-600 mb-2">Create Account</h2>
+                        <p className="text-lg text-gray-600">Start your educational journey</p>
+                    </motion.div>
+
+                    {/* Role Selection */}
+                    <motion.div className="grid grid-cols-2 gap-4" variants={containerVariants}>
+                        {['Teacher', 'Guardian'].map((role) => (
+                            <motion.div
+                                key={role}
                                 variants={itemVariants}
+                                whileHover={{ scale: 1.03 }}
+                                className={`p-4 border-2 rounded-xl cursor-pointer transition-colors ${
+                                    isTeacher === (role === 'Teacher')
+                                        ? 'border-emerald-500 bg-emerald-50'
+                                        : 'border-gray-200 hover:border-emerald-300'
+                                }`}
+                                onClick={() => {
+                                    setIsTeacher(role === 'Teacher');
+                                    setFormData(prev => ({ ...prev, user_type: role.toLowerCase() }));
+                                }}
                             >
-                                {haveAccount ? "Login to continue" : "Start your educational journey"}
-                            </motion.p>
+                                <h3 className="text-xl font-semibold text-gray-800 text-center">
+                                    {role}
+                                </h3>
+                                <p className="text-gray-500 text-sm text-center mt-2">
+                                    {role === 'Teacher'
+                                        ? 'Connect with students'
+                                        : 'Find qualified tutors'}
+                                </p>
+                            </motion.div>
+                        ))}
+                    </motion.div>
+
+                    {/* Form Fields */}
+                    <motion.form onSubmit={handleSignup} className="space-y-4">
+                        {/* Common Fields */}
+                        <motion.div variants={itemVariants}>
+                            <label className="block text-lg font-medium text-gray-800 flex items-center">
+                                <FiUser className="mr-3 text-emerald-600 text-xl" />
+                                Full Name
+                            </label>
+                            <input
+                                required
+                                type="text"
+                                name="name"
+                                value={formData.name}
+                                onChange={handleChange}
+                                className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-lg"
+                                placeholder="John Doe"
+                            />
                         </motion.div>
 
-                        {/* Role Selection */}
-                        <motion.div 
-                            className="grid grid-cols-2 gap-2"
-                            variants={containerVariants}
-                        >
-                            {['Parent/Student', 'Tutor'].map((role, index) => (
-                                <motion.div
-                                    key={role}
-                                    variants={itemVariants}
-                                    whileHover={{ scale: 1.03 }}
-                                    whileTap={{ scale: 1 }}
-                                    className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                                        isTeacher === !!index 
-                                            ? 'border-emerald-500 bg-emerald-50 shadow-md' 
-                                            : 'border-gray-200 hover:border-emerald-300'
-                                    }`}
-                                    onClick={() => setIsTeacher(!!index)}
-                                >
-                                    <h3 className="text-xl font-semibold text-gray-800 text-center">
-                                        {role}
-                                    </h3>
-                                    <p className="text-gray-500 text-sm text-center mt-2">
-                                        {index ? 'Connect with students' : 'Find qualified tutors'}
-                                    </p>
-                                </motion.div>
-                            ))}
-                        </motion.div>
-
-                        {/* Form */}
-                        <motion.form 
-                            onSubmit={handleSubmit} 
-                            className="space-y-6"
-                            variants={containerVariants}
-                        >
-                            {!haveAccount && (
-                                <>
-                                    {/* Name Field */}
-                                    <motion.div variants={itemVariants}>
-                                        <label className="block text-lg font-medium text-gray-800 flex items-center">
-                                            <FiUser className="mr-3 text-emerald-600 text-xl" />
-                                            Full Name *
-                                        </label>
-                                        <input
-                                            type="text"
-                                            required
-                                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-emerald-100 text-lg"
-                                            placeholder="John Doe"
-                                            value={formData.name}
-                                            onChange={(e) => setFormData({...formData, name: e.target.value})}
-                                        />
-                                    </motion.div>
-
-                                    {/* Phone Field */}
-                                    <motion.div variants={itemVariants}>
-                                        <label className="block text-lg font-medium text-gray-800 flex items-center">
-                                            <FiSmartphone className="mr-3 text-emerald-600 text-xl" />
-                                            Phone Number *
-                                        </label>
-                                        <input
-                                            type="tel"
-                                            required
-                                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-emerald-100 text-lg"
-                                            placeholder="+880 1XXX XXXXXX"
-                                            value={formData.phone}
-                                            onChange={(e) => setFormData({...formData, phone: e.target.value})}
-                                        />
-                                    </motion.div>
-
-                                    {/* Gender Selection */}
-                                    <motion.div variants={itemVariants}>
-                                        <label className="block text-lg font-medium text-gray-800">
-                                            Gender *
-                                        </label>
-                                        <div className="grid grid-cols-2 gap-3">
-                                            {['Male', 'Female'].map(gender => (
-                                                <motion.label 
-                                                    key={gender}
-                                                    className={`p-3 border-2 rounded-lg flex items-center justify-center cursor-pointer transition-all ${
-                                                        formData.gender === gender 
-                                                            ? 'border-emerald-500 bg-emerald-50' 
-                                                            : 'border-gray-200 hover:border-emerald-300'
-                                                    }`}
-                                                    whileHover={{ scale: 1.02 }}
-                                                >
-                                                    <input
-                                                        type="radio"
-                                                        name="gender"
-                                                        value={gender}
-                                                        className="hidden"
-                                                        onChange={(e) => setFormData({...formData, gender: e.target.value})}
-                                                    />
-                                                    <span className="text-gray-700 text-lg">{gender}</span>
-                                                    {formData.gender === gender && (
-                                                        <FiCheck className="ml-2 text-emerald-600 text-xl" />
-                                                    )}
-                                                </motion.label>
-                                            ))}
-                                        </div>
-                                    </motion.div>
-                                </>
-                            )}
-
-                            {/* Email Field */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <motion.div variants={itemVariants}>
                                 <label className="block text-lg font-medium text-gray-800 flex items-center">
                                     <FiMail className="mr-3 text-emerald-600 text-xl" />
-                                    Email *
+                                    Email
                                 </label>
                                 <input
-                                    type="email"
                                     required
-                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-emerald-100 text-lg"
-                                    placeholder="example@email.com"
+                                    type="email"
+                                    name="email"
                                     value={formData.email}
-                                    onChange={(e) => setFormData({...formData, email: e.target.value})}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-lg"
+                                    placeholder="example@email.com"
                                 />
                             </motion.div>
 
-                            {/* Password Fields */}
                             <motion.div variants={itemVariants}>
                                 <label className="block text-lg font-medium text-gray-800 flex items-center">
-                                    <FiLock className="mr-3 text-emerald-600 text-xl" />
-                                    Password *
+                                    <FiSmartphone className="mr-3 text-emerald-600 text-xl" />
+                                    Phone
                                 </label>
-                                <div className="relative">
-                                    <input
-                                        type={showPassword ? "text" : "password"}
-                                        required
-                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-emerald-100 text-lg pr-16"
-                                        placeholder="••••••••"
-                                        value={formData.password}
-                                        onChange={(e) => setFormData({...formData, password: e.target.value})}
-                                    />
-                                    <motion.button
-                                        type="button"
-                                        onClick={() => setShowPassword(!showPassword)}
-                                        className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center gap-2 text-gray-400 hover:text-emerald-600"
-                                        whileHover={{ scale: 1.1 }}
-                                    >
-                                        {showPassword ? (
-                                            <>
-                                                <FiEyeOff className="text-xl" />
-                                                <span className="text-sm">Hide</span>
-                                            </>
-                                        ) : (
-                                            <>
-                                                <FiEye className="text-xl" />
-                                                <span className="text-sm">Show</span>
-                                            </>
-                                        )}
-                                    </motion.button>
+                                <input
+                                    required
+                                    type="text"
+                                    name="phone"
+                                    value={formData.phone}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-lg"
+                                    placeholder="+880 1XXX XXXXXX"
+                                />
+                            </motion.div>
+                        </div>
+
+                        <motion.div variants={itemVariants}>
+                            <label className="block text-lg font-medium text-gray-800 flex items-center">
+                                <FiLock className="mr-3 text-emerald-600 text-xl" />
+                                Password
+                            </label>
+                            <div className="relative">
+                                <input
+                                    required
+                                    type={showPassword ? "text" : "password"}
+                                    name="password"
+                                    value={formData.password}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-lg pr-10"
+                                    placeholder="Enter your password"
+                                />
+                                <div
+                                    onClick={() => setShowPassword(!showPassword)}
+                                    className="absolute right-3 top-3 text-xl text-gray-500 cursor-pointer"
+                                >
+                                    {showPassword ? <FiEyeOff /> : <FiEye />}
                                 </div>
+                            </div>
+                        </motion.div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <motion.div variants={itemVariants}>
+                                <label className="block text-lg font-medium text-gray-800 flex items-center">
+                                    <FiUser className="mr-3 text-emerald-600 text-xl" />
+                                    Age
+                                </label>
+                                <input
+                                    required
+                                    type="number"
+                                    name="age"
+                                    value={formData.age}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-lg"
+                                    placeholder="Enter your age"
+                                />
                             </motion.div>
 
-                            {!haveAccount && (
+                            <motion.div variants={itemVariants}>
+                                <label className="block text-lg font-medium text-gray-800 flex items-center">
+                                    <FiBook className="mr-3 text-emerald-600 text-xl" />
+                                    Institution
+                                </label>
+                                <input
+                                    required
+                                    type="text"
+                                    name="institution"
+                                    value={formData.institution}
+                                    onChange={handleChange}
+                                    className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-lg"
+                                    placeholder="Your institution"
+                                />
+                            </motion.div>
+                        </div>
+
+                        {/* Conditional Fields */}
+                        {isTeacher ? (
+                            <>
                                 <motion.div variants={itemVariants}>
                                     <label className="block text-lg font-medium text-gray-800 flex items-center">
-                                        <FiLock className="mr-3 text-emerald-600 text-xl" />
-                                        Confirm Password *
+                                        <FiMapPin className="mr-3 text-emerald-600 text-xl" />
+                                        Location
                                     </label>
-                                    <div className="relative">
-                                        <input
-                                            type={showPassword ? "text" : "password"}
-                                            required
-                                            className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-emerald-100 text-lg pr-16"
-                                            placeholder="••••••••"
-                                            value={formData.confirmPassword}
-                                            onChange={(e) => setFormData({...formData, confirmPassword: e.target.value})}
-                                        />
-                                    </div>
+                                    <input
+                                        required
+                                        type="text"
+                                        name="location"
+                                        value={formData.location}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-lg"
+                                        placeholder="Your location"
+                                    />
                                 </motion.div>
-                            )}
 
-                            {/* Submit Button */}
-                            <motion.button
-                                type="submit"
-                                variants={itemVariants}
-                                whileHover={{ 
-                                    scale: 1.02,
-                                    boxShadow: "0 10px 20px rgba(5, 150, 105, 0.2)"
-                                }}
-                                whileTap={{ 
-                                    scale: 0.98,
-                                    boxShadow: "0 5px 10px rgba(5, 150, 105, 0.1)"
-                                }}
-                                className="w-full bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white py-4 rounded-xl font-semibold text-lg transition-all shadow-lg"
-                            >
-                                {haveAccount ? "Login to Account" : "Create Account Now"}
-                            </motion.button>
-                        </motion.form>
+                                <motion.div variants={itemVariants}>
+                                    <label className="block text-lg font-medium text-gray-800 flex items-center">
+                                        <FiBook className="mr-3 text-emerald-600 text-xl" />
+                                        Subjects
+                                    </label>
+                                    <input
+                                        required
+                                        type="text"
+                                        name="subjects"
+                                        value={formData.subjects}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-lg"
+                                        placeholder="Subjects you teach"
+                                    />
+                                </motion.div>
 
-                        {/* Form Footer */}
-                        <motion.div 
-                            className="text-center text-gray-600"
+                                <motion.div variants={itemVariants}>
+                                    <label className="block text-lg font-medium text-gray-800 flex items-center">
+                                        <FiUser className="mr-3 text-emerald-600 text-xl" />
+                                        Experience
+                                    </label>
+                                    <textarea
+                                        required
+                                        name="experience"
+                                        value={formData.experience}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-lg"
+                                        placeholder="Your teaching experience"
+                                    />
+                                </motion.div>
+                            </>
+                        ) : (
+                            <>
+                                <motion.div variants={itemVariants}>
+                                    <label className="block text-lg font-medium text-gray-800 flex items-center">
+                                        <FiBook className="mr-3 text-emerald-600 text-xl" />
+                                        Preferred Subjects
+                                    </label>
+                                    <input
+                                        required
+                                        type="text"
+                                        name="preferred_subjects"
+                                        value={formData.preferred_subjects}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-lg"
+                                        placeholder="Subjects you want"
+                                    />
+                                </motion.div>
+
+                                <motion.div variants={itemVariants}>
+                                    <label className="block text-lg font-medium text-gray-800 flex items-center">
+                                        <FiUser className="mr-3 text-emerald-600 text-xl" />
+                                        Student Class
+                                    </label>
+                                    <input
+                                        required
+                                        type="text"
+                                        name="student_class"
+                                        value={formData.student_class}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-lg"
+                                        placeholder="e.g., Class 7"
+                                    />
+                                </motion.div>
+
+                                <motion.div variants={itemVariants}>
+                                    <label className="block text-lg font-medium text-gray-800 flex items-center">
+                                        <FiHome className="mr-3 text-emerald-600 text-xl" />
+                                        Address
+                                    </label>
+                                    <textarea
+                                        required
+                                        name="address"
+                                        value={formData.address}
+                                        onChange={handleChange}
+                                        className="w-full px-4 py-3 border-2 border-gray-200 rounded-xl text-lg"
+                                        placeholder="Full address"
+                                    />
+                                </motion.div>
+                            </>
+                        )}
+
+                        <motion.button
+                            type="submit"
+                            className="w-full bg-emerald-500 hover:bg-emerald-600 text-white text-lg font-semibold py-3 rounded-xl transition-colors duration-300"
                             variants={itemVariants}
                         >
-                            <p className="text-lg">
-                                {haveAccount ? "New to our platform? " : "Already have an account? "}
-                                <button
-                                    onClick={() => setHaveAccount(!haveAccount)}
-                                    className="text-emerald-600 font-semibold hover:underline"
-                                >
-                                    {haveAccount ? "Register Here" : "Login Here"}
-                                </button>
-                            </p>
-                            <p className="mt-4 text-base">
-                                By continuing, you agree to our{' '}
-                                <a href="#" className="text-emerald-600 font-semibold hover:underline">Terms</a> and{' '}
-                                <a href="#" className="text-emerald-600 font-semibold hover:underline">Privacy Policy</a>
-                            </p>
-                        </motion.div>
-                    </motion.div>
+                            Sign Up
+                        </motion.button>
+                    </motion.form>
+                    <p className="text-center mt-6 text-gray-600">
+                        Already have an account?{' '}
+                        <a href="/login" className="text-emerald-600 font-semibold hover:underline">
+                            Login here
+                        </a>
+                    </p>
                 </motion.div>
             </motion.div>
         </div>
@@ -327,3 +404,4 @@ const SignUp = () => {
 };
 
 export default SignUp;
+

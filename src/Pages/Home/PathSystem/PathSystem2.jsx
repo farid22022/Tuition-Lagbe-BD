@@ -1,3 +1,4 @@
+
 import React from "react";
 import { motion } from "framer-motion";
 
@@ -29,22 +30,62 @@ const ProfileCreation = () => {
     }
   ];
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.3,
+        delayChildren: 0.2
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { y: 50, opacity: 0, scale: 0.95 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      scale: 1,
+      transition: {
+        type: "spring",
+        stiffness: 120,
+        damping: 12
+      }
+    }
+  };
+
+  const pathVariants = {
+    hidden: { pathLength: 0 },
+    visible: {
+      pathLength: 1,
+      transition: {
+        duration: 2,
+        ease: "easeInOut"
+      }
+    }
+  };
+
   return (
     <div className="relative min-h-screen bg-gradient-to-b from-[#FBFFE6] to-white overflow-hidden">
       {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="absolute inset-0 overflow-hidden"
+      >
         {[...Array(20)].map((_, i) => (
           <motion.div
             key={i}
-            className="absolute w-8 h-8 bg-gradient-to-r from-green-200 to-green-300 rounded-full blur-sm"
+            className="absolute w-8 h-8 bg-gradient-to-r from-green-200 to-green-300 rounded-full blur-lg opacity-50"
             initial={{
-              x: Math.random() * window.innerWidth,
-              y: Math.random() * window.innerHeight,
+              x: Math.random() * 100 + "%",
+              y: Math.random() * 100 + "%",
               scale: Math.random() * 0.5 + 0.5
             }}
             animate={{
-              x: [0, 100, 0],
-              y: [0, 50, 0],
+              x: ["0%", "20%", "0%"],
+              y: ["0%", "30%", "0%"],
               rotate: 360
             }}
             transition={{
@@ -54,125 +95,127 @@ const ProfileCreation = () => {
             }}
           />
         ))}
-      </div>
+      </motion.div>
 
-      <div className="relative z-10 min-h-[800px] flex items-center justify-center p-8">
-        <div className="w-full max-w-6xl mx-auto">
+      <div className="relative z-10 min-h-[800px] flex items-center justify-center p-4 md:p-8">
+        <motion.div
+          className="w-full max-w-6xl mx-auto"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-100px" }}
+        >
           {/* Section Header */}
           <motion.div
-            className="text-center mb-16"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
+            className="text-center mb-12 md:mb-16"
+            variants={itemVariants}
           >
             <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
               <span className="bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
                 Start Your Teaching Journey
               </span>
             </h2>
-            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            <p className="text-lg md:text-xl text-gray-600 max-w-2xl mx-auto">
               Follow these simple steps to begin your tutoring career with us
             </p>
           </motion.div>
 
           {/* Steps Container */}
           <div className="relative w-full max-w-6xl mx-auto min-h-[500px] md:h-[600px]">
-            {/* Diagonal Dotted Path (Desktop) */}
+            {/* Animated Path */}
             <motion.svg
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ amount: 0.2 }}
-              transition={{ duration: 1 }}
               className="absolute inset-0 w-full h-full hidden md:block"
               viewBox="0 0 100 100"
               preserveAspectRatio="none"
             >
-              <path
+              <motion.path
                 d="M 5 15 L 95 85"
                 fill="none"
                 stroke="#cbd5e1"
                 strokeWidth="2"
                 strokeDasharray="4 4"
+                variants={pathVariants}
+                initial="hidden"
+                whileInView="visible"
               />
             </motion.svg>
-
-            {/* Vertical Line (Mobile) */}
-            <motion.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              className="absolute left-1/2 w-0.5 bg-gray-200 h-full hidden max-md:block"
-              style={{ strokeDasharray: "4 4" }}
-            />
 
             <div className="grid md:grid-cols-4 max-md:grid-rows-4 gap-8 md:gap-0 h-full">
               {steps.map((step, index) => (
                 <motion.div
                   key={index}
-                  initial={{ x: index % 2 === 0 ? -100 : 100, opacity: 0 }}
-                  whileInView={{ x: 0, opacity: 1 }}
-                  viewport={{ margin: "20% 0px -20% 0px" }}
-                  transition={{
-                    delay: index * 0.2,
-                    type: "spring",
-                    stiffness: 50
-                  }}
-                  className={`relative md:absolute w-full md:w-72 h-48 rounded-xl shadow-2xl p-6 bg-gradient-to-br ${step.color} text-white
+                  variants={itemVariants}
+                  className={`relative md:absolute w-full md:w-72 h-48 rounded-2xl shadow-xl p-6 bg-gradient-to-br ${step.color} text-white
                     max-md:mx-auto max-md:max-w-[320px] hover:shadow-2xl transition-all group`}
                   style={{
                     left: `${index * 25 + 5}%`,
                     top: `${index * 20 + 5}%`,
-                    ...(window.innerWidth < 768 && {
-                      left: 'auto',
-                      top: 'auto',
-                      position: 'relative'
-                    })
                   }}
+                  whileHover={{ y: -10 }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   {/* Animated Background */}
-                  <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <div className="absolute -left-20 -top-20 w-40 h-40 bg-white/10 rounded-full blur-xl animate-spin-slow" />
-                    <div className="absolute -right-20 -bottom-20 w-40 h-40 bg-white/10 rounded-full blur-xl animate-spin-slow reverse" />
+                  <div className="absolute inset-0 overflow-hidden rounded-2xl">
+                    <motion.div
+                      className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity"
+                      animate={{
+                        x: [-100, 200],
+                        y: [-50, 150],
+                        rotate: 45
+                      }}
+                      transition={{
+                        duration: 4,
+                        repeat: Infinity,
+                        ease: "linear"
+                      }}
+                    />
                   </div>
 
                   <div className='flex gap-4 h-full relative z-10'>
-                    <div className="flex-shrink-0">
-                      <motion.span 
-                        className="text-4xl"
-                        animate={{ scale: [1, 1.2, 1] }}
-                        transition={{ duration: 2, repeat: Infinity }}
-                      >
-                        {step.emoji}
-                      </motion.span>
-                    </div>
+                    <motion.div
+                      className="flex-shrink-0"
+                      animate={{ rotate: [0, 15, 0] }}
+                      transition={{ duration: 6, repeat: Infinity }}
+                    >
+                      <span className="text-4xl">{step.emoji}</span>
+                    </motion.div>
                     <div className="flex flex-col justify-center">
                       <h3 className="text-xl font-bold text-left mb-2">
                         {step.title}
                       </h3>
-                      <p className="text-sm text-gray-100">
+                      <p className="text-sm text-gray-100 opacity-90">
                         {step.subtitle}
                       </p>
                     </div>
                   </div>
 
                   {/* Step Number */}
-                  <div className="absolute -top-4 -right-4 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md">
+                  <motion.div
+                    className="absolute -top-4 -right-4 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-md"
+                    initial={{ scale: 0 }}
+                    whileInView={{ scale: 1 }}
+                    transition={{ type: "spring", delay: 0.3 }}
+                  >
                     <span className="text-xl font-bold text-gray-800">
                       {index + 1}
                     </span>
-                  </div>
+                  </motion.div>
 
-                  {/* Mobile Connection Dots */}
+                  {/* Mobile Connection */}
                   {index !== steps.length - 1 && (
-                    <div className="absolute -bottom-8 left-1/2 -translate-x-1/2 md:hidden">
-                      <div className="h-4 w-1 bg-gray-300 mx-auto" />
-                      <div className="h-4 w-1 bg-gray-300 mx-auto mt-1" />
-                    </div>
+                    <motion.div
+                      className="absolute -bottom-8 left-1/2 -translate-x-1/2 md:hidden"
+                      initial={{ opacity: 0 }}
+                      whileInView={{ opacity: 1 }}
+                    >
+                      <div className="h-4 w-1 bg-gray-300 mx-auto animate-pulse" />
+                    </motion.div>
                   )}
                 </motion.div>
               ))}
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );

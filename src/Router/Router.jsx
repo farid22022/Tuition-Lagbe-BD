@@ -12,6 +12,7 @@ import DashBoardRegistration from "../DashBoardElements/Registration/Registratio
 import DashBoardTutoringInformation from "../DashBoardElements/TutoringLocation/DashBoardTutoringInformation";
 import Dashboard from "../Layout/Dashboard/DashBoard";
 import UserDashBoardHome from "../DashBoardElements/UserDashBoard/UserDashBoardHome/UserDashBoardHome";
+import Login from "../Shared/Login/Login";
 
 
 const router = createBrowserRouter([
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
         {
           path:'sign-up',
           element:<SignUp/>
+        },
+        {
+          path:'login',
+          element:<Login/>
         },
         {
           path:"registration-dashboard",
