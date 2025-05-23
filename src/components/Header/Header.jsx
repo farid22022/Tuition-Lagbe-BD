@@ -1,142 +1,4 @@
-// import { Link } from "react-router-dom";
-// import { motion } from "framer-motion";
-// import { FiGithub, FiLinkedin, FiMenu, FiX } from "react-icons/fi";
-// import { useState } from "react";
 
-// const Header = () => {
-//   const [isMenuOpen, setIsMenuOpen] = useState(false);
-//   const [isHovered, setIsHovered] = useState(false);
-
-//   const navItems = ["Home", "Tuition Jobs", "Tutors", "Tutor Request", "About Us","Dashboard"];
-
-//   const getLinkPath = (item) => {
-//     if (item ==="Dashboard") {
-//       return "user-dashboard/dashboard";
-//     }
-//     if (item === "Home") return "/";
-//     return `/${item.toLowerCase().replace(' ', '-')}`;
-//   };
-
-//   const navOptions = (
-//     <div className="hidden lg:flex space-x-4 xl:space-x-8 items-center ">
-//       {navItems.map((item) => (
-//         <motion.div
-//           key={item}
-//           whileHover={{ scale: 1.05 }}
-//           whileTap={{ scale: 0.95 }}
-//           transition={{ type: "spring", stiffness: 400 }}
-//         >
-//           <Link
-//             to={getLinkPath(item)}
-//             className="text-green-600 hover:text-green-500 transition-colors duration-300 relative group text-sm xl:text-base"
-//             onMouseEnter={() => setIsHovered(true)}
-//             onMouseLeave={() => setIsHovered(false)}
-//           >
-//             {item}
-//             <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-emerald-300 transition-all duration-300 group-hover:w-full"></span>
-//           </Link>
-//         </motion.div>
-//       ))}
-//     </div>
-//   );
-
-//   const mobileNavOptions = (
-//     <div className="flex flex-col space-y-6 p-4 md:p-6 ">
-//       {navItems.map((item) => (
-//         <motion.div
-//           key={item}
-//           whileHover={{ scale: 1.05 }}
-//           whileTap={{ scale: 0.95 }}
-//           onClick={() => setIsMenuOpen(false)}
-//         >
-//           <Link
-//             to={getLinkPath(item)}
-//             className="text-emerald-100 hover:text-emerald-50 text-lg md:text-xl"
-//           >
-//             {item}
-//           </Link>
-//         </motion.div>
-//       ))}
-//     </div>
-//   );
-
-//   const socialLinks = (
-//     <div className="flex space-x-4 md:space-x-6 items-center">
-//       <Link to ="sign-up">
-//         <motion.button
-//           whileHover={{ scale: 1.05 }}
-//           className="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-colors duration-300"
-//         >
-//           Login
-//         </motion.button>
-//       </Link>
-//     </div>
-//   );
-
-//   return (
-//     <motion.header
-//       className="fixed w-full top-0 z-50 backdrop-blur-lg bg-black shadow-lg border-b border-emerald-800 md:z-80"
-//       initial={{ y: -100, opacity: 0 }}
-//       animate={{ y: 0, opacity: 1 }}
-//       transition={{ type: "spring", stiffness: 200, damping: 20 }}
-//     >
-//       <nav className="container mx-auto px-4 sm:px-6 lg:px-8 py-3 md:py-4">
-//         <div className="flex justify-between items-center">
-//           {/* Logo */}
-//           <motion.div
-//             whileHover={{ scale: 1.05 }}
-//             className="flex items-center space-x-2"
-//           >
-//             <Link
-//               to="/"
-//               className="text-xl md:text-2xl font-bold bg-gradient-to-r from-emerald-300 to-green-500 bg-clip-text text-transparent"
-//             >
-//               Tuition Lagbe
-//             </Link>
-//           </motion.div>
-
-//           {/* Desktop Navigation */}
-//           <div className="hidden lg:flex flex-1 justify-center mx-4">
-//             {navOptions}
-//           </div>
-
-//           {/* Social Links */}
-//           <div className="hidden lg:flex">{socialLinks}</div>
-
-//           {/* Mobile Menu Button */}
-//           <div className="lg:hidden">
-//             <button
-//               onClick={() => setIsMenuOpen(!isMenuOpen)}
-//               className="text-green-600 hover:text-green-500 transition-colors p-2"
-//             >
-//               {isMenuOpen ? (
-//                 <FiX className="w-6 h-6 md:w-7 md:h-7" />
-//               ) : (
-//                 <FiMenu className="w-6 h-6 md:w-7 md:h-7" />
-//               )}
-//             </button>
-//           </div>
-//         </div>
-
-//         {/* Mobile Menu */}
-//         {isMenuOpen && (
-//           <motion.div
-//             initial={{ opacity: 0, y: -20 }}
-//             animate={{ opacity: 1, y: 0 }}
-//             exit={{ opacity: 0, y: -20 }}
-//             transition={{ duration: 0.3 }}
-//             className="lg:hidden mt-2 md:mt-4 border-t border-emerald-700"
-//           >
-//             {mobileNavOptions}
-//             <div className="flex justify-center pb-4">{socialLinks}</div>
-//           </motion.div>
-//         )}
-//       </nav>
-//     </motion.header>
-//   );
-// };
-
-// export default Header;
 
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
@@ -152,6 +14,7 @@ const Header = () => {
   const getLinkPath = (item) => {
     if (item === "Dashboard") return "user-dashboard/dashboard";
     if (item === "Home") return "/";
+    if (item === "Tutor Request") return "/tuition-form";
     return `/${item.toLowerCase().replace(' ', '-')}`;
   };
 
@@ -205,7 +68,7 @@ const Header = () => {
   };
 
   const navOptions = (
-    <div className="hidden lg:flex space-x-4 xl:space-x-8 items-center">
+    <div className="hidden lg:flex space-x-4 xl:space-x-8 items-center mb-6">
       {navItems.map((item, i) => (
         <motion.div
           key={item}
@@ -238,7 +101,7 @@ const Header = () => {
   );
 
   const mobileNavOptions = (
-    <motion.div className="flex flex-col space-y-6 p-4 md:p-6 bg-black/95">
+    <motion.div className="flex flex-col space-y-6 p-4 md:p-6 bg-black/95 mb-10 rounded-lg shadow-lg">
       {navItems.map((item, i) => (
         <motion.div
           key={item}

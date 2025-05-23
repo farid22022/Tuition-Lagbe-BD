@@ -13,6 +13,7 @@ import DashBoardTutoringInformation from "../DashBoardElements/TutoringLocation/
 import Dashboard from "../Layout/Dashboard/DashBoard";
 import UserDashBoardHome from "../DashBoardElements/UserDashBoard/UserDashBoardHome/UserDashBoardHome";
 import Login from "../Shared/Login/Login";
+import TuitionForm from "../Shared/TuitionFrom/TuitionForm";
 
 
 const router = createBrowserRouter([
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
         {
           path:'login',
           element:<Login/>
+        },
+        {
+          path:'tuition-form',
+          element:<TuitionForm/>
         },
         {
           path:"registration-dashboard",
