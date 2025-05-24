@@ -140,7 +140,7 @@ const ProfileCreation = () => {
               />
             </motion.svg>
 
-            <div className="grid md:grid-cols-4 max-md:grid-rows-4 gap-8 md:gap-0 h-full">
+            <div className="grid md:grid-cols-4 max-md:grid-rows-4 gap-12 md:gap-10 h-full">
               {steps.map((step, index) => (
                 <motion.div
                   key={index}

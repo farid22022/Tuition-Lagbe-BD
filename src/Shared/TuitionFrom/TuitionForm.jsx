@@ -1,4 +1,3 @@
-
 import React, { useState, useContext } from "react";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useNavigate } from "react-router-dom";
@@ -34,11 +33,9 @@ const TuitionForm = () => {
   const [errors, setErrors] = useState({});
   const [submissionStatus, setSubmissionStatus] = useState(null);
 
-  // Scroll animations
   const { scrollYProgress } = useScroll();
   const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
 
-  // Animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -108,13 +105,18 @@ const TuitionForm = () => {
       return;
     }
 
-    try {
-      const axiosAuth = axiosPublic;
-      axiosAuth.defaults.headers.common[
-        "Authorization"
-      ] = `Bearer ${user.access_token}`;
+    const token = localStorage.getItem("access-token");
+    console.log("Token before submit:", token); // Debug token
+    if (!token) {
+      setSubmissionStatus({
+        type: "error",
+        message: "No authentication token found. Please log in again.",
+      });
+      return;
+    }
 
-      const response = await axiosAuth.post("/job-postings/", formData);
+    try {
+      const response = await axiosPublic.post("/job-postings/", formData);
       if (response.status !== 201) {
         throw new Error("Failed to post job");
       }
@@ -125,10 +127,12 @@ const TuitionForm = () => {
       });
       setTimeout(() => navigate("/job-postings"), 2000);
     } catch (err) {
+      const errorMessage = err.response?.data?.detail || err.message || "Failed to post job. Please try again.";
       setSubmissionStatus({
         type: "error",
-        message:
-          err.response?.data?.detail || "Failed to post job. Please try again.",
+        message: errorMessage.includes("<!DOCTYPE html>")
+          ? "Server error: Please check the backend logs."
+          : errorMessage,
       });
     }
   };
@@ -154,7 +158,6 @@ const TuitionForm = () => {
           initial="hidden"
           animate="visible"
         >
-          {/* Form Content */}
           <div className="w-full lg:w-1/2 lg:pr-12">
             <h1 className="text-6xl font-bold text-gray-900 mb-6 bg-gradient-to-r from-emerald-600 to-green-600 bg-clip-text text-transparent">
               Fill Up The Form For Getting Tuition
@@ -176,7 +179,6 @@ const TuitionForm = () => {
 
             <form onSubmit={handleSubmit} className="space-y-8">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Location */}
                 <motion.div variants={itemVariants} whileHover="hover">
                   <label className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                     <MdLocationOn className="text-emerald-600 text-xl shrink-0" />
@@ -202,7 +204,6 @@ const TuitionForm = () => {
                   )}
                 </motion.div>
 
-                {/* Job Title */}
                 <motion.div variants={itemVariants} whileHover="hover">
                   <label className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                     <MdTitle className="text-emerald-600 text-xl shrink-0" />
@@ -230,7 +231,6 @@ const TuitionForm = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Tuition Type */}
                 <motion.div variants={itemVariants} whileHover="hover">
                   <label className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                     <MdWork className="text-emerald-600 text-xl shrink-0" />
@@ -248,7 +248,6 @@ const TuitionForm = () => {
                   </motion.select>
                 </motion.div>
 
-                {/* Medium */}
                 <motion.div variants={itemVariants} whileHover="hover">
                   <label className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                     <MdSchool className="text-emerald-600 text-xl shrink-0" />
@@ -270,7 +269,6 @@ const TuitionForm = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Days per Week */}
                 <motion.div variants={itemVariants} whileHover="hover">
                   <label className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                     <MdEvent className="text-emerald-600 text-xl shrink-0" />
@@ -296,7 +294,6 @@ const TuitionForm = () => {
                   )}
                 </motion.div>
 
-                {/* Class */}
                 <motion.div variants={itemVariants} whileHover="hover">
                   <label className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                     <MdPeople className="text-emerald-600 text-xl shrink-0" />
@@ -323,7 +320,6 @@ const TuitionForm = () => {
                 </motion.div>
               </div>
 
-              {/* Subjects */}
               <motion.div variants={itemVariants} whileHover="hover">
                 <label className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                   <MdMenuBook className="text-emerald-600 text-xl shrink-0" />
@@ -350,7 +346,6 @@ const TuitionForm = () => {
               </motion.div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                {/* Salary */}
                 <motion.div variants={itemVariants} whileHover="hover">
                   <label className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
                     <MdAttachMoney className="text-emerald-600 text-xl shrink-0" />
@@ -376,7 +371,6 @@ const TuitionForm = () => {
                   )}
                 </motion.div>
 
-                {/* Submit Button */}
                 <motion.div
                   className="flex items-end justify-end"
                   variants={itemVariants}
@@ -398,7 +392,6 @@ const TuitionForm = () => {
             </form>
           </div>
 
-          {/* SVG Illustration */}
           <motion.div
             className="hidden lg:flex w-1/2 items-center justify-center pl-12"
             variants={svgVariants}
@@ -425,7 +418,6 @@ const TuitionForm = () => {
         </motion.div>
       </div>
 
-      {/* Floating Background Elements */}
       <motion.div
         className="absolute top-0 left-0 w-full h-full pointer-events-none"
         initial={{ opacity: 0 }}
